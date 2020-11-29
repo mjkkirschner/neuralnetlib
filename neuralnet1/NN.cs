@@ -13,11 +13,11 @@ namespace neuralnet1
         public double Value { get; set; }
         public static Random random = new Random();
 
-        public Neuron(Layer previousLayer)
+        public Neuron(int nextLayerSize)
         {
-            this.Bias = random.NextDouble() - 1.0;
-            this.Value = 0;
-            this.Weights = previousLayer?.Neurons.Select(x => random.NextDouble() - 1.0).ToArray();
+            this.Bias = random.NextDouble() *2.0 - 1.0;
+            this.Value = 0.0;
+            this.Weights = Enumerable.Range(0, nextLayerSize).Select(x => random.NextDouble() * 2.0 - 1.0).ToArray();
         }
 
         [JsonConstructor]
@@ -40,16 +40,15 @@ namespace neuralnet1
             {
                 //chance should be between 0 and 1.
                 var roll = random.NextDouble();
-                if (chanceOfMutation < roll)
+                if (roll < chanceOfMutation)
                 {
                     Weights[wi] = (random.NextDouble() * 2.0 - 1.0) * AmplitudeOfMutation;
                 }
-                continue;
             }
 
             //chance should be between 0 and 1.
             var roll2 = random.NextDouble();
-            if (chanceOfMutation < roll2)
+            if (roll2< chanceOfMutation)
             {
                 Bias = (random.NextDouble() * 2.0 - 1.0) * AmplitudeOfMutation;
             }
@@ -62,9 +61,9 @@ namespace neuralnet1
     {
         public Neuron[] Neurons { get; set; }
 
-        public Layer(int size, Layer previousLayer)
+        public Layer(int size, int nextLayerSize)
         {
-            this.Neurons = Enumerable.Range(0, size).Select(x => new Neuron(previousLayer)).ToArray();
+            this.Neurons = Enumerable.Range(0, size).Select(x => new Neuron(nextLayerSize)).ToArray();
         }
 
         [JsonConstructor]
@@ -89,8 +88,8 @@ namespace neuralnet1
             var i = 0;
             foreach (var size in layerdimensions)
             {
-                var previousLayer = Layers.ElementAtOrDefault(i - 1);
-                Layers[i] = new Layer(size, previousLayer);
+                var nextLayerSize = layerdimensions.ElementAtOrDefault(i +1);
+                Layers[i] = new Layer(size, nextLayerSize);
                 i++;
             }
         }

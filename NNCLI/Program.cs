@@ -14,7 +14,7 @@ namespace NNCLI
             var nn2 = NN.Deserialize(json);
 
             Console.WriteLine(NN.Serialize(nn2));
-
+            nn2.FF();
 
         }
     }
